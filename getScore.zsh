@@ -1,0 +1,1 @@
+curl "https://www.geoguessr.com/results/$1" | grep "__NEXT_DATA__" | perl -pe 's/^.*<script id="__NEXT_DATA__" .*?>(.*?)<\/script>.*$/\1/'
