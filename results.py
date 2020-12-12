@@ -7,6 +7,10 @@ FETCH_RESULTS_COMMAND_FORMAT="./getResults.zsh {pageSize} {page}"
 FETCH_SCORE_COMMAND_FORMAT="./getScore.zsh {resultId}"
 TEMP_OUTPUT_FILE="output.json"
 MAP_FILTER = "A Diverse World"
+PROJECT_NAME="test"
+TEMP_DIR="tmp/"
+OUTPUT_DIR="output/"
+
 
 def isValidResult(result):
     if "id" in result and "payload" in result:
@@ -90,7 +94,9 @@ for resultId in resultIds:
 for playerRound in playerRounds:
     print(playerRound.printLocation())
 
-
+outputJson = OUTPUT_DIR + PROJECT_NAME + ".json"
+outputJsonHandle = open(outputJson, mode="w")
+json.dump(playerRounds, outputJson, indent=4)
 
 
 
