@@ -1,7 +1,7 @@
 import os
 import json
 
-MAX_PAGE=10
+MAX_PAGE=1
 PAGE_SIZE=25
 FETCH_RESULTS_COMMAND_FORMAT="./getResults.zsh {pageSize} {page}"
 FETCH_SCORE_COMMAND_FORMAT="./getScore.zsh {resultId}"
@@ -94,9 +94,11 @@ for resultId in resultIds:
 for playerRound in playerRounds:
     print(playerRound.printLocation())
 
-outputJson = OUTPUT_DIR + PROJECT_NAME + ".json"
+outputJsonText = "var playerRounds=" + json.dumps(playerRounds, indent=4) + ";"
+outputJson = OUTPUT_DIR + "data_" + PROJECT_NAME + ".json"
 outputJsonHandle = open(outputJson, mode="w")
-json.dump(playerRounds, outputJson, indent=4)
+outputJsonHandle.write(outputJsonText)
+outputJsonHandle.close()
 
 
 
