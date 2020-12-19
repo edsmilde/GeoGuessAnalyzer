@@ -71,7 +71,7 @@ resultIds = fetchResultIds(PAGE_SIZE, MAX_PAGE)
     
 playerRounds = []
 
-SCORE_PERCENT_THRESHOLD = 60
+SCORE_PERCENT_THRESHOLD = 100
 
 print("Fetching results from games...")
 for resultId in resultIds:
@@ -84,18 +84,19 @@ for resultId in resultIds:
             round = rounds[i]
             guess = guesses[i]
             scorePercent = guess["roundScoreInPercentage"]
-            if scorePercent < SCORE_PERCENT_THRESHOLD:
+            if scorePercent <= SCORE_PERCENT_THRESHOLD:
                 roundLat = round["lat"]
                 roundLng = round["lng"]
-                playerRound = PlayerRound(roundLat, roundLng, scorePercent)
+                playerRound = {"lat": roundLat, "lng": roundLng, "scorePercent": scorePercent}
+#                playerRound = PlayerRound(roundLat, roundLng, scorePercent)
                 playerRounds.append(playerRound)
 
 
-for playerRound in playerRounds:
-    print(playerRound.printLocation())
+# for playerRound in playerRounds:
+#     print(playerRound.printLocation())
 
 outputJsonText = "var playerRounds=" + json.dumps(playerRounds, indent=4) + ";"
-outputJson = OUTPUT_DIR + "data_" + PROJECT_NAME + ".json"
+outputJson = OUTPUT_DIR + "data_" + PROJECT_NAME + ".js"
 outputJsonHandle = open(outputJson, mode="w")
 outputJsonHandle.write(outputJsonText)
 outputJsonHandle.close()

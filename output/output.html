@@ -3,26 +3,92 @@
         <script type="text/javascript" src="data_test.js"></script>
         <script type="text/javascript">
 
-MAP_CENTER = {lat: 0, lng: 0};
+var MAP_CENTER = {lat: 0, lng: 0};
+var MAP_HEIGHT = 500;
+var MAP_WIDTH = 676.89;
 
-function locationToMap(lat, lng) {
+var MAP_BOUNDS = {
+    topLeft: {
+        lng: -169.1110266,
+        lat: 83.63001
+    },
+    bottomRight: {
+        lng: 190.48712,
+        lat: -58.488473
+    }
+}
 
+function radiansFromDegrees(degrees) {
+    return (degrees/180)*Math.PI;
+}
+
+function mercatorPositionFromLat(lat) {
+    return Math.sin(radiansFromDegrees(lat));
+}
+
+function mapLocationFromCoordinate(lat, lng) {
+    var relX = (lng - MAP_BOUNDS.topLeft.lng) / (MAP_BOUNDS.bottomRight.lng - MAP_BOUNDS.topLeft.lng);
+    var relY = (mercatorPositionFromLat(lat) - mercatorPositionFromLat(MAP_BOUNDS.bottomRight.lat)) / (mercatorPositionFromLat(MAP_BOUNDS.topLeft.lat) - mercatorPositionFromLat(MAP_BOUNDS.bottomRight.lat));
+    var x = relX * MAP_WIDTH;
+    var y = relY * MAP_HEIGHT;
+    return {x: x, y: y};
+}
+
+function colorFromScore(scorePercent) {
+    var score = scorePercent/100;
+    var green = Math.floor(Math.sqrt(score)*255);
+    var red = Math.floor(Math.sqrt(1-score)*255);
+    var colorString = "rgb(" + red + "," + green + ",0)";
+    return colorString; 
+}
+
+var MAP_POINT_KEY = "map-point";
+
+function createMapPointElement(lat, lng, id, scorePercent) {
+    var mapPointElement = document.createElement("div");
+    mapPointElement.setAttribute("class", MAP_POINT_KEY);
+    mapPointElement.setAttribute("id", MAP_POINT_KEY + "-" + id);
+    var mapLocation = mapLocationFromCoordinate(lat, lng);
+    mapPointElement.style.backgroundColor = colorFromScore(scorePercent);
+    mapPointElement.style.left = mapLocation.x;
+    mapPointElement.style.top = mapLocation.y;
+    return mapPointElement;
 }
 
 function populateMap() {
+    var mapElement = document.getElementById("map");
     for (var i = 0; i < playerRounds.length; i++) {
-
+        var mapPointElement = createMapPointElement(playerRounds[i].lat, playerRounds[i].lng, i, playerRounds[i].scorePercent);
+        mapElement.appendChild(mapPointElement);
     }
 }
 
         </script>
         <style type="text/css">
+
+
+#map {
+    height: 500px;
+}
+
+#map-image {
+    height: 500px;
+    width: 676.89px;
+}
+
+.map-point {
+    width: 5px;
+    height: 5px;
+    position: fixed;
+    display: inline-block;
+}
+
         </style>
     </head>
-    <body>
+    <body onload="populateMap();">
         <div id="wrapper">
             <div id="map">
-
+                <img id="map-image" src="world.svg">
             </div>
             <div id="data">
 
